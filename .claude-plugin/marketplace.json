@@ -1,0 +1,11 @@
+{
+  "name": "dakota-search",
+  "owner": { "name": "Colin Gload" },
+  "plugins": [
+    {
+      "name": "search",
+      "source": ".",
+      "description": "Dakota Search — acquisition deal-flow: analysis skill, deal commands (new/organize/analyze/report/evaluate/nda/loi/log/publish), dashboard sync, and a morning Gmail/Calendar routine."
+    }
+  ]
+}

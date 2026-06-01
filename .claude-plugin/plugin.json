@@ -1,0 +1,7 @@
+{
+  "name": "search",
+  "displayName": "Dakota Search",
+  "version": "0.1.0",
+  "description": "Dakota Strategy acquisition deal-flow: analysis (P&L rebuild, adjusted SDE/EBITDA, SBA stack + DSCR), NDA/LOI generation, pipeline dashboard sync, and a morning Gmail/Calendar routine. Works in Claude Code and Claude Cowork.",
+  "author": { "name": "Colin Gload" }
+}

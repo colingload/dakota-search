@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<!--
+====================================================================================
+  FINANCIALS SIDE-BY-SIDE — Dakota Strategy deal-flow template
+  ----------------------------------------------------------------------------------
+  PURPOSE
+    Three-year comparison of Cash P&L · Balance Sheet · Tax Return for any deal,
+    formatted in Dakota brand colors. Integrates the deal's Executive Summary
+    (from analysis.md) and the prioritized diligence questions (from questions.md)
+    so this single HTML page can stand alone as the financial deep-dive deliverable.
+
+  HOW TO USE
+    1. Copy this file to the deal folder root and rename to `financials-side-by-side.html`
+    2. Populate the Executive Summary card at the top from analysis.md §1 and §12
+       (thesis, decision recommendation, EBITDA range, multiple range, fit score)
+    3. Replace all {{PLACEHOLDER}} tokens with deal-specific values
+    4. Walk through each section in the order below — skip any not yet available
+    5. In Section 5 (Diligence Questions), pull H-priority items directly from
+       questions.md, with H/M/L priority badges (CSS classes provided)
+
+  REQUIRED INPUTS (drop into /financials/ before populating)
+    - P&L for 3 most recent fiscal years (cash-basis QB report or accountant-prepared)
+    - Balance sheet for the same 3 year-ends
+    - Tax returns for the same 3 years (often the most recent year is not yet filed)
+    - Optional but useful: equipment list, debt schedule, AR aging
+
+  STRUCTURE
+    [TOP] — Executive Summary card (thesis, decision, EBITDA, multiple, fit score)
+    Section 1 — Filing metadata (preparer, total assets per Sch L)
+    Section 2 — Cash-basis P&L 3-year comparison
+    Section 3 — Cash-basis Balance Sheet 3-year comparison
+    Section 4 — 1120-S / 1065 / 1120 tax return 3-year comparison
+    Section 5 — Cross-statement tie-out (proves the three statements reconcile)
+    Section 6 — Diligence questions surfaced by the comparison (cross-ref questions.md)
+
+  CALLOUT BOXES
+    Each section ends with a yellow callout. Use these to flag the 3-5 things that
+    actually matter from the comparison — NOT to summarize every line item.
+    Cross-reference into analysis.md sections so the reader can navigate back.
+    Common things worth flagging:
+      - Missing year-end entries (depreciation, accruals)
+      - Mid-deal CPA changes or amended returns
+      - Reclassifications between years that distort YoY comps
+      - Cash flow stress signals (negative cash, maxed LOC, owner cash injections)
+      - Revenue mix shifts that mask weakness in core business
+      - Debt that's not amortizing (potential balloon)
+      - Related-party transactions appearing/disappearing pre-sale
+      - Owner compensation channels (W-2 vs. draws vs. management fees)
+      - Variance between book P&L and BS net income (consolidation gaps)
+
+  COLOR / FORMATTING CONVENTIONS
+    - Yellow `flag` row: data anomaly worth investigating
+    - Red `pill`: serious flag (missing entry, amended return, distress signal)
+    - Gray `pill`: informational (not yet filed, etc.)
+    - Green `pill`: favorable (paid off, ahead of plan)
+    - `priority-h` / `priority-m` / `priority-l` badges in Section 5 mirror questions.md
+    - `delta` cells: positive (green) is favorable, negative (red) is unfavorable
+       BUT: be thoughtful — declining liability is favorable (green), declining
+       revenue is unfavorable (red). Set semantic colors, not arithmetic colors.
+    - `pct` span (small italic gray under each P&L number): % of total revenue
+       for that year. REQUIRED on every numeric cell in the P&L year columns so
+       the reader can spot cost-structure shifts at a glance. Skip the delta
+       columns (those are already YoY %). Format: one decimal, e.g. "26.4%".
+
+  BRAND COLORS (do not change without consulting brand-guide.md)
+    --navy: #0a2540        — header, total rows
+    --accent: #c8a96a      — gold accent line
+    --pos: #0f766e         — favorable (green)
+    --neg: #b91c1c         — unfavorable (red)
+    --warn: #b45309        — caution (amber/orange)
+
+  PAIRS WITH (mandatory cross-references)
+    - analysis.md   — full 12-section deal analysis (drives the Exec Summary card)
+    - questions.md  — prioritized H/M/L diligence asks (drives Section 5)
+    - README.md     — deal snapshot (headline terms, source, NDA status)
+====================================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{COMPANY_NAME}} — Financials Side-by-Side</title>
+<style>
+  :root {
+    --navy: #0a2540;
+    --navy-light: #1e3a5f;
+    --accent: #c8a96a;
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --border: #e1e4e8;
+    --text: #1a1a1a;
+    --muted: #6c757d;
+    --pos: #0f766e;
+    --neg: #b91c1c;
+    --warn: #b45309;
+    --warn-bg: #fef3c7;
+    --info-bg: #eff6ff;
+    --info-border: #93c5fd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  header {
+    background: var(--navy);
+    color: white;
+    padding: 24px 32px;
+    border-bottom: 4px solid var(--accent);
+  }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  header .subtitle { font-size: 12px; color: #c2cce0; }
+  .container { max-width: 1500px; margin: 0 auto; padding: 24px 32px; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  section > h2 {
+    background: var(--navy);
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  section > h2 .src {
+    float: right;
+    font-size: 11px;
+    font-weight: 400;
+    color: #c2cce0;
+  }
+  section > .body { padding: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th, td {
+    padding: 6px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #fafbfc;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  th.col-yr-a { color: #6c757d; }
+  th.col-yr-b { color: #1e3a5f; }
+  th.col-yr-c { color: #b45309; }
+  td.lbl { font-weight: 500; }
+  td.lbl.indent { padding-left: 28px; font-weight: 400; color: #4b5563; }
+  tr.subtotal { background: #f8f9fa; font-weight: 600; }
+  tr.subtotal td { border-top: 1px solid var(--border); }
+  tr.total { background: #1e3a5f; color: white; font-weight: 700; }
+  tr.total td { border-bottom: none; }
+  tr.section-hdr td {
+    background: #eef2f7;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+  }
+  tr.flag td { background: #fef3c7; }
+  .neg { color: var(--neg); }
+  .num { font-variant-numeric: tabular-nums; }
+  .delta {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-top: 1px;
+  }
+  .delta.pos { color: var(--pos); }
+  .delta.neg { color: var(--neg); }
+  /* .pct = small italic % of total revenue, rendered under the dollar value
+     in each P&L year column. Required on every P&L numeric cell so the
+     reader can see vertical structure (line as % of revenue) at a glance. */
+  .pct {
+    display: block;
+    font-size: 10px;
+    color: #94a3b8;
+    font-style: italic;
+    font-weight: 400;
+    margin-top: 1px;
+    letter-spacing: 0.2px;
+  }
+  tr.total .pct { color: #c2cce0; }
+  tr.subtotal .pct { color: #6c757d; }
+  .callout {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--accent);
+    padding: 14px 18px;
+    margin: 16px 20px;
+    border-radius: 4px;
+    font-size: 12.5px;
+  }
+  .callout strong { color: var(--navy); }
+  .callout ul { margin: 6px 0 0 18px; }
+  .callout li { margin: 4px 0; }
+  .info {
+    background: var(--info-bg);
+    border-left: 4px solid var(--info-border);
+    padding: 14px 18px;
+    margin: 0 0 24px 0;
+    border-radius: 4px;
+    font-size: 12.5px;
+  }
+  .legend { padding: 12px 20px; background: #fafbfc; border-bottom: 1px solid var(--border); font-size: 11.5px; color: var(--muted); }
+  .legend strong { color: var(--text); }
+  .pill {
+    display: inline-block;
+    background: #fef3c7;
+    color: var(--warn);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .pill.gray { background: #e5e7eb; color: #4b5563; }
+  .pill.red { background: #fee2e2; color: #991b1b; }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    padding: 0;
+  }
+  .meta-grid > div {
+    padding: 14px 20px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .meta-grid > div:last-child { border-right: none; }
+  .meta-grid .yr { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .meta-grid .val { font-weight: 600; color: var(--navy); }
+  .col-num { width: 14%; }
+  .col-lbl { width: 30%; }
+  .col-delta { width: 10%; color: var(--muted); font-size: 11px; }
+  th.col-delta, td.col-delta { font-weight: 400; }
+
+  /* ---- Executive Summary card (populated from analysis.md §1 + §12) ---- */
+  .exec-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: 6px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .exec-card .hdr {
+    background: var(--navy);
+    color: white;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .exec-card .hdr .badge {
+    background: var(--warn);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .exec-card .hdr .badge.pass { background: var(--neg); }
+  .exec-card .hdr .badge.proceed { background: var(--pos); }
+  .exec-card .body { padding: 18px 24px; }
+  .exec-thesis { font-size: 13.5px; line-height: 1.6; color: #1a1a1a; margin-bottom: 14px; }
+  .exec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .exec-grid > div {
+    padding: 12px 0;
+    border-right: 1px solid var(--border);
+    text-align: left;
+    padding-right: 16px;
+  }
+  .exec-grid > div:last-child { border-right: none; }
+  .exec-grid > div + div { padding-left: 16px; }
+  .exec-grid .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .exec-grid .val { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .exec-grid .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ---- Diligence-question priority badges (Section 5; mirrors questions.md) ---- */
+  .priority-h { background: #fee2e2; color: #991b1b; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+  .priority-m { background: #fef3c7; color: var(--warn); padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+  .priority-l { background: #e5e7eb; color: #4b5563; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+  .pill.green { background: #d1fae5; color: #065f46; }
+</style>
+</head>
+<body>
+<header>
+  <h1>{{COMPANY_NAME}} — Financials Side-by-Side</h1>
+  <div class="subtitle">Cash-basis P&L · Cash-basis Balance Sheet · {{TAX_FORM}} Tax Return · {{YEAR_A}} / {{YEAR_B}} / {{YEAR_C}}</div>
+</header>
+
+<div class="container">
+
+<!-- ============== EXECUTIVE SUMMARY (populate from analysis.md §1 and §12) ============== -->
+<!-- INSTRUCTION: This card distills analysis.md into a one-glance verdict.
+     - Thesis: paste from README.md One-Line Thesis or analysis.md §12
+     - Badge: replace .badge text with one of "PASS", "COUNTER AT $X", or "SUBMIT IOI"
+       and add CSS class .pass (red) or .proceed (green) if appropriate
+     - Fit score: from analysis.md §11 total
+     - Four metric cells: Asking, Adj EBITDA (CIM vs Claude), Multiple, DSCR or other key ratio -->
+<div class="exec-card">
+  <div class="hdr">
+    <span>Executive Summary <span style="font-weight: 400; font-size: 12px; color: #c2cce0;">(see <code style="color: #c2cce0;">analysis.md</code> for full detail)</span></span>
+    <span class="badge">{{DECISION_BADGE — e.g. "COUNTER AT $X" / "PASS" / "SUBMIT IOI"}} · FIT {{FIT_SCORE}}/5</span>
+  </div>
+  <div class="body">
+    <div class="exec-thesis">
+      {{ONE_PARAGRAPH_THESIS — pull from analysis.md §12 / README.md. State the operating reality, the deal-breaker (if any), and the recommended action in one tight paragraph. Bold the deal-breaker phrase.}}
+    </div>
+    <div class="exec-grid">
+      <div>
+        <div class="lbl">Asking Price</div>
+        <div class="val">${{ASKING_PRICE}}</div>
+        <div class="sub">{{BROKER_NAME}}</div>
+      </div>
+      <div>
+        <div class="lbl">Adj EBITDA (CIM vs Claude)</div>
+        <div class="val">${{CIM_EBITDA}} / <span style="color: var(--neg);">${{CLAUDE_EBITDA}}</span></div>
+        <div class="sub">{{EBITDA_DELTA_NOTE — e.g. "$350K mgmt-fee + $0 D&A flagged"}}</div>
+      </div>
+      <div>
+        <div class="lbl">Implied Multiple</div>
+        <div class="val">{{CIM_MULTIPLE}}× / <span style="color: var(--neg);">{{CLAUDE_MULTIPLE}}×</span></div>
+        <div class="sub">vs. industry comps {{COMP_RANGE}}</div>
+      </div>
+      <div>
+        <div class="lbl">{{KEY_FINANCING_METRIC — e.g. "Y3 DSCR (with seller note)"}}</div>
+        <div class="val"><span style="color: var(--neg);">{{METRIC_VALUE}}</span></div>
+        <div class="sub">{{METRIC_NOTE — e.g. "below 1.5× SBA threshold"}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="info">
+  <strong>Source documents reconciled:</strong>
+  P&L (cash) for {{YEAR_A}}, {{YEAR_B}}, {{YEAR_C}} · Balance Sheet (cash) at year-end of each year · {{TAX_FORM}} tax return for {{YEAR_A}} ({{YEAR_A_PREPARER}}) and {{YEAR_B}} ({{YEAR_B_PREPARER}}).
+  <strong>{{YEAR_C}} tax return status: {{YEAR_C_TAX_STATUS}}.</strong> All figures pulled directly from the seller-provided PDFs in <code>/financials/</code>.
+</div>
+
+<!-- ============== METADATA ============== -->
+<section>
+  <h2>Filing Metadata <span class="src">from {{TAX_FORM}} returns</span></h2>
+  <div class="meta-grid">
+    <div>
+      <div class="yr">{{YEAR_A}} Return</div>
+      <div class="val">Filed {{YEAR_A_FILED_DATE}}</div>
+      <div>Preparer: {{YEAR_A_PREPARER}}</div>
+      <div>Total assets per Sch L: <strong>${{YEAR_A_SCHL_ASSETS}}</strong></div>
+    </div>
+    <div>
+      <div class="yr">{{YEAR_B}} Return <!-- Add <span class="pill red">AMENDED</span> if applicable --></div>
+      <div class="val">Filed {{YEAR_B_FILED_DATE}}</div>
+      <div>Preparer: {{YEAR_B_PREPARER}}</div>
+      <div>Total assets per Sch L: <strong>${{YEAR_B_SCHL_ASSETS}}</strong></div>
+    </div>
+    <div>
+      <div class="yr">{{YEAR_C}} Return <!-- <span class="pill">NOT FILED</span> if applicable --></div>
+      <div class="val">{{YEAR_C_FILED_DATE_OR_DASH}}</div>
+      <div>{{YEAR_C_PREPARER_OR_NOTE}}</div>
+      <div>{{YEAR_C_NOTE}}</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== P&L ============== -->
+<section>
+  <h2>1. Cash-Basis P&L — 3-Year Comparison <span class="src">{{PNL_SOURCE_NOTE}}</span></h2>
+  <div class="legend">
+    {{PNL_LEGEND_NOTE — e.g. "Cash-basis QuickBooks reports as provided by seller. Note categorization changes between YEAR_A and YEAR_B make line-level YoY comps noisy."}}
+  </div>
+  <table>
+    <colgroup>
+      <col class="col-lbl"><col class="col-num"><col class="col-num"><col class="col-num"><col class="col-delta"><col class="col-delta">
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="col-yr-a">{{YEAR_A}}</th>
+        <th class="col-yr-b">{{YEAR_B}}</th>
+        <th class="col-yr-c">{{YEAR_C}}</th>
+        <th>{{YEAR_B_SHORT}} vs {{YEAR_A_SHORT}}</th>
+        <th>{{YEAR_C_SHORT}} vs {{YEAR_B_SHORT}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="section-hdr"><td colspan="6">Revenue <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--muted); font-style: italic;">(small italic % under each number = % of total revenue that year)</span></td></tr>
+      <!-- INSTRUCTION: Every numeric cell in the YEAR columns must include a <span class="pct">X.X%</span>
+           sub-element showing that line's % of TOTAL REVENUE for that year. The reader uses these to see
+           cost structure shifts (e.g. Subcontractors 23% → 29% → 26%) without doing mental math.
+           Compute as: line / total_revenue_for_that_year. Use one decimal. TOTAL INCOME row = 100.0%.
+           Skip the delta columns (those are already YoY %). -->
+      <tr><td class="lbl indent">{{REVENUE_LINE_1_LABEL}}</td><td class="num">{{REV1_A}}<span class="pct">{{REV1_A_PCT}}</span></td><td class="num">{{REV1_B}}<span class="pct">{{REV1_B_PCT}}</span></td><td class="num">{{REV1_C}}<span class="pct">{{REV1_C_PCT}}</span></td><td class="num">{{REV1_DELTA_BA}}</td><td class="num">{{REV1_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">{{REVENUE_LINE_2_LABEL}}</td><td class="num">{{REV2_A}}<span class="pct">{{REV2_A_PCT}}</span></td><td class="num">{{REV2_B}}<span class="pct">{{REV2_B_PCT}}</span></td><td class="num">{{REV2_C}}<span class="pct">{{REV2_C_PCT}}</span></td><td class="num">{{REV2_DELTA_BA}}</td><td class="num">{{REV2_DELTA_CB}}</td></tr>
+      <!-- Add additional revenue rows as needed -->
+      <tr class="subtotal"><td>Total Services Revenue</td><td class="num">{{SVC_REV_A}}<span class="pct">{{SVC_A_PCT}}</span></td><td class="num">{{SVC_REV_B}}<span class="pct">{{SVC_B_PCT}}</span></td><td class="num">{{SVC_REV_C}}<span class="pct">{{SVC_C_PCT}}</span></td><td class="num">{{SVC_DELTA_BA}}</td><td class="num">{{SVC_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Other income (one-time / non-operating)</td><td class="num">{{OTHER_INC_A}}<span class="pct">{{OI_A_PCT}}</span></td><td class="num">{{OTHER_INC_B}}<span class="pct">{{OI_B_PCT}}</span></td><td class="num">{{OTHER_INC_C}}<span class="pct">{{OI_C_PCT}}</span></td><td class="num">{{OTHER_INC_DELTA_BA}}</td><td class="num">{{OTHER_INC_DELTA_CB}}</td></tr>
+      <tr class="total"><td>TOTAL INCOME</td><td class="num">{{TOTAL_INCOME_A}}<span class="pct">100.0%</span></td><td class="num">{{TOTAL_INCOME_B}}<span class="pct">100.0%</span></td><td class="num">{{TOTAL_INCOME_C}}<span class="pct">100.0%</span></td><td class="num">{{TI_DELTA_BA}}</td><td class="num">{{TI_DELTA_CB}}</td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Major Expense Categories</td></tr>
+      <!-- INSTRUCTION: List each material expense line with its % of revenue. Flag depreciation row if missing in any year using class="flag". Common lines: Wages/Payroll, Payroll Taxes, Subs, Supplies, Fuel, Auto, Equipment Rental, Insurance, Repairs, Rent, Travel/Meals, Interest, Depreciation, Other -->
+      <tr><td class="lbl indent">{{EXPENSE_LINE_1_LABEL}}</td><td class="num">{{EXP1_A}}<span class="pct">{{EXP1_A_PCT}}</span></td><td class="num">{{EXP1_B}}<span class="pct">{{EXP1_B_PCT}}</span></td><td class="num">{{EXP1_C}}<span class="pct">{{EXP1_C_PCT}}</span></td><td class="num">{{EXP1_DELTA_BA}}</td><td class="num">{{EXP1_DELTA_CB}}</td></tr>
+      <!-- ... repeat for each material expense line, always including the .pct span ... -->
+      <!-- Example flagged depreciation row when missing in YEAR_C:
+      <tr class="flag"><td class="lbl indent"><strong>Depreciation Expense</strong></td><td class="num">{{DEP_A}}<span class="pct">{{DEP_A_PCT}}</span></td><td class="num">{{DEP_B}}<span class="pct">{{DEP_B_PCT}}</span></td><td class="num"><strong>0</strong> <span class="pill">missing</span><span class="pct">0.0%</span></td><td class="num">{{DEP_DELTA_BA}}</td><td class="num neg">{{DEP_DELTA_CB}}</td></tr>
+      -->
+      <tr class="total"><td>TOTAL EXPENSE</td><td class="num">{{TOTAL_EXP_A}}<span class="pct">{{TE_A_PCT}}</span></td><td class="num">{{TOTAL_EXP_B}}<span class="pct">{{TE_B_PCT}}</span></td><td class="num">{{TOTAL_EXP_C}}<span class="pct">{{TE_C_PCT}}</span></td><td class="num">{{TE_DELTA_BA}}</td><td class="num">{{TE_DELTA_CB}}</td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Bottom Line</td></tr>
+      <tr class="subtotal"><td>Net Ordinary Income</td><td class="num">{{NOI_A}}<span class="pct">{{NOI_A_PCT}}</span></td><td class="num">{{NOI_B}}<span class="pct">{{NOI_B_PCT}}</span></td><td class="num">{{NOI_C}}<span class="pct">{{NOI_C_PCT}}</span></td><td class="num">{{NOI_DELTA_BA}}</td><td class="num">{{NOI_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Other Income / (Expense)</td><td class="num">{{OOI_A}}<span class="pct">{{OOI_A_PCT}}</span></td><td class="num">{{OOI_B}}<span class="pct">{{OOI_B_PCT}}</span></td><td class="num">{{OOI_C}}<span class="pct">{{OOI_C_PCT}}</span></td><td class="num">{{OOI_DELTA_BA}}</td><td class="num">{{OOI_DELTA_CB}}</td></tr>
+      <tr class="total"><td>NET INCOME (per books)</td><td class="num">{{NI_A}}<span class="pct">{{NI_A_PCT}}</span></td><td class="num">{{NI_B}}<span class="pct">{{NI_B_PCT}}</span></td><td class="num">{{NI_C}}<span class="pct">{{NI_C_PCT}}</span></td><td class="num">{{NI_DELTA_BA}}</td><td class="num">{{NI_DELTA_CB}}</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>P&L observations to flag (replace with deal-specific):</strong>
+    <ul>
+      <li>{{PNL_OBSERVATION_1 — most material anomaly, e.g. "Depreciation missing from YEAR_C — adjusted net income is X not Y"}}</li>
+      <li>{{PNL_OBSERVATION_2 — second anomaly}}</li>
+      <li>{{PNL_OBSERVATION_3 — third anomaly}}</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== BALANCE SHEET ============== -->
+<section>
+  <h2>2. Cash-Basis Balance Sheet — 3-Year Comparison <span class="src">{{BS_SOURCE_NOTE}}</span></h2>
+  <table>
+    <colgroup>
+      <col class="col-lbl"><col class="col-num"><col class="col-num"><col class="col-num"><col class="col-delta"><col class="col-delta">
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="col-yr-a">12/31/{{YEAR_A_SHORT}}</th>
+        <th class="col-yr-b">12/31/{{YEAR_B_SHORT}}</th>
+        <th class="col-yr-c">12/31/{{YEAR_C_SHORT}}</th>
+        <th>{{YEAR_B_SHORT}} vs {{YEAR_A_SHORT}}</th>
+        <th>{{YEAR_C_SHORT}} vs {{YEAR_B_SHORT}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="section-hdr"><td colspan="6">Assets</td></tr>
+      <tr><td class="lbl indent">Cash / Checking accounts</td><td class="num">{{CASH_A}}</td><td class="num">{{CASH_B}}</td><td class="num">{{CASH_C}}</td><td class="num">{{CASH_DELTA_BA}}</td><td class="num">{{CASH_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Accounts Receivable</td><td class="num">{{AR_A}}</td><td class="num">{{AR_B}}</td><td class="num">{{AR_C}}</td><td class="num">{{AR_DELTA_BA}}</td><td class="num">{{AR_DELTA_CB}}</td></tr>
+      <tr class="subtotal"><td>Total Current Assets</td><td class="num">{{TCA_A}}</td><td class="num">{{TCA_B}}</td><td class="num">{{TCA_C}}</td><td class="num">{{TCA_DELTA_BA}}</td><td class="num">{{TCA_DELTA_CB}}</td></tr>
+      <!-- INSTRUCTION: List fixed asset categories (Building, Vehicles, Machinery, F&F, Computers) -->
+      <tr><td class="lbl indent">Building & Improvements</td><td class="num">{{BLDG_A}}</td><td class="num">{{BLDG_B}}</td><td class="num">{{BLDG_C}}</td><td class="num">{{BLDG_DELTA_BA}}</td><td class="num">{{BLDG_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Vehicles</td><td class="num">{{VEH_A}}</td><td class="num">{{VEH_B}}</td><td class="num">{{VEH_C}}</td><td class="num">{{VEH_DELTA_BA}}</td><td class="num">{{VEH_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Machinery & Equipment</td><td class="num">{{MACH_A}}</td><td class="num">{{MACH_B}}</td><td class="num">{{MACH_C}}</td><td class="num">{{MACH_DELTA_BA}}</td><td class="num">{{MACH_DELTA_CB}}</td></tr>
+      <!-- Flag accumulated depreciation row if frozen between any two years -->
+      <tr><td class="lbl indent">Accumulated Depreciation</td><td class="num">{{ACCUM_DEP_A}}</td><td class="num">{{ACCUM_DEP_B}}</td><td class="num">{{ACCUM_DEP_C}}</td><td class="num">{{ACCUM_DEP_DELTA_BA}}</td><td class="num">{{ACCUM_DEP_DELTA_CB}}</td></tr>
+      <tr class="subtotal"><td>Total Fixed Assets (net)</td><td class="num">{{TFA_A}}</td><td class="num">{{TFA_B}}</td><td class="num">{{TFA_C}}</td><td class="num">{{TFA_DELTA_BA}}</td><td class="num">{{TFA_DELTA_CB}}</td></tr>
+      <tr class="total"><td>TOTAL ASSETS</td><td class="num">{{TA_A}}</td><td class="num">{{TA_B}}</td><td class="num">{{TA_C}}</td><td class="num">{{TA_DELTA_BA}}</td><td class="num">{{TA_DELTA_CB}}</td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Liabilities</td></tr>
+      <tr><td class="lbl indent">Credit Cards</td><td class="num">{{CC_A}}</td><td class="num">{{CC_B}}</td><td class="num">{{CC_C}}</td><td class="num">{{CC_DELTA_BA}}</td><td class="num">{{CC_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Loans from Shareholders (liability)</td><td class="num">{{SHL_A}}</td><td class="num">{{SHL_B}}</td><td class="num">{{SHL_C}}</td><td class="num">{{SHL_DELTA_BA}}</td><td class="num">{{SHL_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Equipment / Vehicle loans (sum)</td><td class="num">{{EQUIP_LOANS_A}}</td><td class="num">{{EQUIP_LOANS_B}}</td><td class="num">{{EQUIP_LOANS_C}}</td><td class="num">{{EQ_DELTA_BA}}</td><td class="num">{{EQ_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Line of Credit</td><td class="num">{{LOC_A}}</td><td class="num">{{LOC_B}}</td><td class="num">{{LOC_C}}</td><td class="num">{{LOC_DELTA_BA}}</td><td class="num">{{LOC_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Term loans (other)</td><td class="num">{{TERM_A}}</td><td class="num">{{TERM_B}}</td><td class="num">{{TERM_C}}</td><td class="num">{{TERM_DELTA_BA}}</td><td class="num">{{TERM_DELTA_CB}}</td></tr>
+      <tr class="subtotal"><td>Total Other Current Liabilities</td><td class="num">{{TOCL_A}}</td><td class="num">{{TOCL_B}}</td><td class="num">{{TOCL_C}}</td><td class="num">{{TOCL_DELTA_BA}}</td><td class="num">{{TOCL_DELTA_CB}}</td></tr>
+      <tr class="total"><td>TOTAL LIABILITIES</td><td class="num">{{TL_A}}</td><td class="num">{{TL_B}}</td><td class="num">{{TL_C}}</td><td class="num">{{TL_DELTA_BA}}</td><td class="num">{{TL_DELTA_CB}}</td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Equity</td></tr>
+      <tr><td class="lbl indent">Additional Paid-in Capital</td><td class="num">{{APIC_A}}</td><td class="num">{{APIC_B}}</td><td class="num">{{APIC_C}}</td><td class="num">{{APIC_DELTA_BA}}</td><td class="num">{{APIC_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Retained Earnings</td><td class="num">{{RE_A}}</td><td class="num">{{RE_B}}</td><td class="num">{{RE_C}}</td><td class="num">{{RE_DELTA_BA}}</td><td class="num">{{RE_DELTA_CB}}</td></tr>
+      <tr><td class="lbl indent">Net Income (current year)</td><td class="num">{{NI_BS_A}}</td><td class="num">{{NI_BS_B}}</td><td class="num">{{NI_BS_C}}</td><td class="num">{{NI_BS_DELTA_BA}}</td><td class="num">{{NI_BS_DELTA_CB}}</td></tr>
+      <tr class="total"><td>TOTAL EQUITY</td><td class="num">{{TE_A}}</td><td class="num">{{TE_B}}</td><td class="num">{{TE_C}}</td><td class="num">{{TE_DELTA_BA}}</td><td class="num">{{TE_DELTA_CB}}</td></tr>
+      <tr class="subtotal"><td>Total Liabilities + Equity (check)</td><td class="num">{{LE_A}}</td><td class="num">{{LE_B}}</td><td class="num">{{LE_C}}</td><td class="num">—</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Balance-sheet observations to flag (replace with deal-specific):</strong>
+    <ul>
+      <li>{{BS_OBSERVATION_1 — e.g. "Negative cash all 3 years, LOC fully drawn → cash crisis signal"}}</li>
+      <li>{{BS_OBSERVATION_2 — e.g. "Accumulated depreciation frozen between years X and Y → year-end entry not made"}}</li>
+      <li>{{BS_OBSERVATION_3 — e.g. "Equity deeply negative and deteriorating $X over period"}}</li>
+      <li>{{BS_OBSERVATION_4 — e.g. "Shareholder loans jumped $X in year C → owner cash injection"}}</li>
+      <li>{{BS_OBSERVATION_5 — e.g. "Loan X unchanged across all three years → interest-only or balloon"}}</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== TAX RETURN ============== -->
+<section>
+  <h2>3. {{TAX_FORM}} Tax Return — 3-Year Comparison <span class="src">{{TAX_SOURCE_NOTE}}</span></h2>
+  <table>
+    <colgroup>
+      <col class="col-lbl"><col class="col-num"><col class="col-num"><col class="col-num"><col class="col-delta"><col class="col-delta">
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="col-yr-a">{{YEAR_A}}</th>
+        <th class="col-yr-b">{{YEAR_B}}</th>
+        <th class="col-yr-c">{{YEAR_C}}</th>
+        <th>{{YEAR_B_SHORT}} vs {{YEAR_A_SHORT}}</th>
+        <th>P&L Tie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="section-hdr"><td colspan="6">Income (Form {{TAX_FORM}}, Page 1)</td></tr>
+      <tr><td class="lbl indent">1a Gross receipts or sales</td><td class="num">{{GR_A}}</td><td class="num">{{GR_B}}</td><td class="num">{{GR_C}}</td><td class="num">{{GR_DELTA}}</td><td class="num">ties to P&L</td></tr>
+      <tr><td class="lbl indent">2 Cost of Goods Sold</td><td class="num">{{COGS_A}}</td><td class="num">{{COGS_B}}</td><td class="num">{{COGS_C}}</td><td class="num">{{COGS_DELTA}}</td><td class="num">{{COGS_TIE}}</td></tr>
+      <tr><td class="lbl indent">3 Gross Profit</td><td class="num">{{GP_A}}</td><td class="num">{{GP_B}}</td><td class="num">{{GP_C}}</td><td class="num">{{GP_DELTA}}</td><td class="num"></td></tr>
+      <tr><td class="lbl indent">4 Net gain Form 4797</td><td class="num">{{F4797_A}}</td><td class="num">{{F4797_B}}</td><td class="num">{{F4797_C}}</td><td class="num">{{F4797_DELTA}}</td><td class="num"></td></tr>
+      <tr class="subtotal"><td>6 Total Income</td><td class="num">{{TR_TI_A}}</td><td class="num">{{TR_TI_B}}</td><td class="num">{{TR_TI_C}}</td><td class="num">{{TR_TI_DELTA}}</td><td class="num"></td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Deductions (Form {{TAX_FORM}}, Page 1)</td></tr>
+      <tr><td class="lbl indent">8 Salaries and wages</td><td class="num">{{WAGES_A}}</td><td class="num">{{WAGES_B}}</td><td class="num">{{WAGES_C}}</td><td class="num">{{WAGES_DELTA}}</td><td class="num">{{WAGES_TIE}}</td></tr>
+      <tr><td class="lbl indent">9 Repairs and maintenance</td><td class="num">{{TR_REP_A}}</td><td class="num">{{TR_REP_B}}</td><td class="num">{{TR_REP_C}}</td><td class="num">{{TR_REP_DELTA}}</td><td class="num">{{TR_REP_TIE}}</td></tr>
+      <tr><td class="lbl indent">11 Rents</td><td class="num">{{TR_RENT_A}}</td><td class="num">{{TR_RENT_B}}</td><td class="num">{{TR_RENT_C}}</td><td class="num">{{TR_RENT_DELTA}}</td><td class="num">{{TR_RENT_TIE}}</td></tr>
+      <tr><td class="lbl indent">12 Taxes and licenses</td><td class="num">{{TR_TAX_A}}</td><td class="num">{{TR_TAX_B}}</td><td class="num">{{TR_TAX_C}}</td><td class="num">{{TR_TAX_DELTA}}</td><td class="num">{{TR_TAX_TIE}}</td></tr>
+      <tr><td class="lbl indent">13 Interest</td><td class="num">{{TR_INT_A}}</td><td class="num">{{TR_INT_B}}</td><td class="num">{{TR_INT_C}}</td><td class="num">{{TR_INT_DELTA}}</td><td class="num">{{TR_INT_TIE}}</td></tr>
+      <!-- Flag depreciation row if missing in any year -->
+      <tr><td class="lbl indent">14 Depreciation (Form 4562)</td><td class="num">{{TR_DEP_A}}</td><td class="num">{{TR_DEP_B}}</td><td class="num">{{TR_DEP_C}}</td><td class="num">{{TR_DEP_DELTA}}</td><td class="num">{{TR_DEP_TIE}}</td></tr>
+      <tr><td class="lbl indent">20 Other deductions</td><td class="num">{{TR_OTH_A}}</td><td class="num">{{TR_OTH_B}}</td><td class="num">{{TR_OTH_C}}</td><td class="num">{{TR_OTH_DELTA}}</td><td class="num">{{TR_OTH_TIE}}</td></tr>
+      <tr class="subtotal"><td>21 Total deductions</td><td class="num">{{TR_TD_A}}</td><td class="num">{{TR_TD_B}}</td><td class="num">{{TR_TD_C}}</td><td class="num">{{TR_TD_DELTA}}</td><td class="num"></td></tr>
+      <tr class="total"><td>22 Ordinary Business Income (Loss)</td><td class="num">{{OBI_A}}</td><td class="num">{{OBI_B}}</td><td class="num">{{OBI_C}}</td><td class="num">{{OBI_DELTA}}</td><td class="num"></td></tr>
+
+      <tr class="section-hdr"><td colspan="6">Schedule L (Tax-Basis Balance Sheet)</td></tr>
+      <tr><td class="lbl indent">Total assets per Schedule L</td><td class="num">{{SCHL_A}}</td><td class="num">{{SCHL_B}}</td><td class="num">{{SCHL_C}}</td><td class="num">{{SCHL_DELTA}}</td><td class="num">{{SCHL_TIE}}</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Tax-return reconciliation observations (replace with deal-specific):</strong>
+    <ul>
+      <li>{{TAX_OBSERVATION_1 — e.g. "Year B was filed as AMENDED on date X — what changed?"}}</li>
+      <li>{{TAX_OBSERVATION_2 — e.g. "CPA changed between years X and Y — note re-categorization patterns"}}</li>
+      <li>{{TAX_OBSERVATION_3 — e.g. "Tax-return ordinary loss reconciles cleanly to P&L net income — book-to-tax bridge is small"}}</li>
+      <li>{{TAX_OBSERVATION_4 — e.g. "Sch L total assets ties closely to book BS"}}</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== CROSS-STATEMENT TIE ============== -->
+<section>
+  <h2>4. Cross-Statement Tie-Out <span class="src">Net income flows through retained earnings → Sch L → BS</span></h2>
+  <table>
+    <colgroup>
+      <col class="col-lbl"><col class="col-num"><col class="col-num"><col class="col-num">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Tie</th>
+        <th class="col-yr-a">{{YEAR_A}}</th>
+        <th class="col-yr-b">{{YEAR_B}}</th>
+        <th class="col-yr-c">{{YEAR_C}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="lbl">P&L Net Income</td><td class="num">{{NI_TIE_A}}</td><td class="num">{{NI_TIE_B}}</td><td class="num">{{NI_TIE_C}}</td></tr>
+      <tr><td class="lbl">Tax Return Ordinary Income (line 22)</td><td class="num">{{OBI_TIE_A}}</td><td class="num">{{OBI_TIE_B}}</td><td class="num">{{OBI_TIE_C}}</td></tr>
+      <tr><td class="lbl">Variance (book vs tax)</td><td class="num">{{VAR_BT_A}}</td><td class="num">{{VAR_BT_B}}</td><td class="num">{{VAR_BT_C}}</td></tr>
+      <tr><td class="lbl">BS Total Assets</td><td class="num">{{TA_TIE_A}}</td><td class="num">{{TA_TIE_B}}</td><td class="num">{{TA_TIE_C}}</td></tr>
+      <tr><td class="lbl">Tax Return Sch L Total Assets</td><td class="num">{{SCHL_TIE_A}}</td><td class="num">{{SCHL_TIE_B}}</td><td class="num">{{SCHL_TIE_C}}</td></tr>
+      <tr><td class="lbl">Variance (book vs Sch L)</td><td class="num">{{VAR_LS_A}}</td><td class="num">{{VAR_LS_B}}</td><td class="num">{{VAR_LS_C}}</td></tr>
+      <tr><td class="lbl">Depreciation — P&L</td><td class="num">{{DEP_TIE_A}}</td><td class="num">{{DEP_TIE_B}}</td><td class="num">{{DEP_TIE_C}}</td></tr>
+      <tr><td class="lbl">Depreciation — Tax Return Line 14</td><td class="num">{{TR_DEP_TIE_A}}</td><td class="num">{{TR_DEP_TIE_B}}</td><td class="num">{{TR_DEP_TIE_C}}</td></tr>
+      <tr><td class="lbl">Accum Depreciation YoY change (BS)</td><td class="num">—</td><td class="num">{{ACCUM_DEP_CHANGE_AB}}</td><td class="num">{{ACCUM_DEP_CHANGE_BC}}</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Tie-out observations (call out reconciling items):</strong>
+    <ul>
+      <li>{{TIE_OBSERVATION_1 — e.g. "Year B accum-depreciation jump ≠ depreciation expense — difference X likely from asset disposals"}}</li>
+      <li>{{TIE_OBSERVATION_2 — e.g. "Year C is incomplete — depreciation entry missing on both P&L and BS"}}</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== KEY QUESTIONS (mirrors questions.md priorities) ============== -->
+<section>
+  <h2>5. Diligence Questions This Side-by-Side Surfaces <span class="src">cross-referenced with questions.md</span></h2>
+  <div style="padding: 18px 24px;">
+    <ol style="margin-left: 18px;">
+      <!-- INSTRUCTION: Pull H-priority items from questions.md PLUS questions surfaced
+           specifically by anomalies in this side-by-side. Use priority badges:
+             <span class="priority-h">H</span>  <span class="priority-m">M</span>  <span class="priority-l">L</span>
+           Cross-reference back to the questions.md row (e.g. "(questions.md #3)") so the
+           reader can navigate. Don't repeat generic diligence — only what THIS analysis surfaced. -->
+      <li style="margin-bottom: 10px;"><span class="priority-h">H</span><strong>{{Q1_TITLE}}</strong> {{Q1_DETAIL}} <em>(questions.md #{{Q1_REF}})</em></li>
+      <li style="margin-bottom: 10px;"><span class="priority-h">H</span><strong>{{Q2_TITLE}}</strong> {{Q2_DETAIL}} <em>(questions.md #{{Q2_REF}})</em></li>
+      <li style="margin-bottom: 10px;"><span class="priority-h">H</span><strong>{{Q3_TITLE}}</strong> {{Q3_DETAIL}} <em>(questions.md #{{Q3_REF}})</em></li>
+      <li style="margin-bottom: 10px;"><span class="priority-m">M</span><strong>{{Q4_TITLE}}</strong> {{Q4_DETAIL}} <em>(questions.md #{{Q4_REF}})</em></li>
+      <li style="margin-bottom: 10px;"><span class="priority-m">M</span><strong>{{Q5_TITLE}}</strong> {{Q5_DETAIL}} <em>(questions.md #{{Q5_REF}})</em></li>
+      <li style="margin-bottom: 10px;"><span class="priority-l">L</span><strong>{{Q6_TITLE}}</strong> {{Q6_DETAIL}} <em>(questions.md #{{Q6_REF}})</em></li>
+    </ol>
+  </div>
+</section>
+
+<div style="text-align: center; color: var(--muted); font-size: 11px; padding: 20px 0;">
+  Source files: <code>financials/pnl-{{YEAR_A}}-cash.pdf</code> · <code>financials/balance-sheet-{{YEAR_A}}-cash.pdf</code> · <code>financials/tax-return-{{YEAR_A}}.pdf</code> (and {{YEAR_B}}, {{YEAR_C}})<br>
+  Generated {{GENERATED_DATE}} from seller-provided documents in <code>{{DEAL_FOLDER_NAME}}/financials/</code><br>
+  Pairs with: <code>analysis.md</code> (full deal analysis) · <code>questions.md</code> (diligence Q&A log) · <code>README.md</code> (deal snapshot)
+</div>
+
+</div>
+</body>
+</html>
