@@ -19,15 +19,21 @@ synced view (push, don't hand-edit).
 
 ## Install / activate
 
-From the repo root (`dakota-strategy/`):
+This plugin lives in its **own public repo** (`colingload/dakota-search`), separate from the private
+`Dakota-Strategy` repo (which holds the consulting work + confidential deal data).
 
-```
-/plugin marketplace add ./.claude-plugin/marketplace.json
-/plugin install search@dakota-strategy
-```
+**In Cowork:** Create plugin → Add marketplace → `colingload/dakota-search` → install **search**.
 
-During development you can also load it directly: `claude --plugin-dir holdco/dakota-search`.
-In **Cowork**, the same committed skills/commands load when this repo is connected.
+**In Claude Code (local):**
+```
+/plugin marketplace add colingload/dakota-search
+/plugin install search@dakota-search
+```
+(or point `--plugin-dir` at a local clone of this repo for live editing).
+
+After pushing changes, pull them with **`/plugin marketplace update`** in Cowork (or `/search:publish`
+from a local clone to ship). Note: the skills operate on deal data under `holdco/deal-flow/` in your
+private repo at runtime — that data is never stored in this public plugin repo.
 
 ## Commands
 
@@ -43,6 +49,7 @@ In **Cowork**, the same committed skills/commands load when this repo is connect
 | `/search:dashboard` | Refresh `pipeline.md` + push to the Sheet (`--export` for HTML) |
 | `/search:morning` | Match Gmail `Deals/{slug}` labels to deals, digest new email |
 | `/search:log` | Log the session to `WORKLOG.md` + route detail to its home |
+| `/search:publish` | Commit + push this plugin repo so Cowork can `/plugin marketplace update` |
 
 Commands also trigger from natural phrases ("new prospect: …", "run the financial analysis on …",
 "draft an LOI for …", "log this") via each skill's description.
