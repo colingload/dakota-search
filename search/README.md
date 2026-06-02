@@ -76,7 +76,7 @@ Every working session is one of three types — **deal · dashboard · plugin/sk
 the start; run `/search:log` at the end. The log lands in `holdco/WORKLOG.md` (universal journal) and
 routes detail to the deal's `discussion-log.md` or the repo `CHANGELOG.md`.
 
-## Build status (v0.1.0 — scaffold)
+## Build status (v0.2.0)
 
 `acquisition-analysis` is complete (incl. the buyer cover letter and the locked Offer Value);
 `session-log` works. The `deal-pipeline` **Gmail routine** and the `deal-documents` **LOI** now run

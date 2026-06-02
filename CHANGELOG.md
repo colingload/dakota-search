@@ -2,7 +2,7 @@
 
 Notable changes to the Dakota Search plugin. Newest first.
 
-## 2026-06-01 · Plugin — command renames, Gmail routine, cover letter + LOI, Offer Value
+## 0.2.0 — 2026-06-01 · Plugin — command renames, Gmail routine, cover letter + LOI, Offer Value
 
 **Goal:** Tighten the deal commands and build document generation end-to-end.
 
