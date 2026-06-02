@@ -1,7 +1,7 @@
 # Dakota Search — Claude Code Plugin
 
 One plugin for the Dakota Strategy acquisition workflow: analyze targets, draft NDAs/LOIs, keep a
-pipeline dashboard, and run a morning email routine — from the terminal **or** Claude Cowork.
+pipeline dashboard, and run a Gmail routine that pulls deal email — from the terminal **or** Claude Cowork.
 
 ## Where it sits (HoldCo is split into 4 compartments)
 
@@ -42,12 +42,12 @@ private repo at runtime — that data is never stored in this public plugin repo
 | `/search:new-deal {name}` | New Deal — clone `_template/`, prefill, add a pipeline row, then wait for inbox drops |
 | `/search:organize {deal}` | Classify + rename a deal's `inbox/` into cim/financials/correspondence |
 | `/search:analyze {deal}` | Financial analysis + risk/operating thesis (rebuild P&L, SDE/EBITDA, DSCR) |
-| `/search:report {deal}` | Decision (§12) + executive summary + pipeline update |
+| `/search:decide {deal}` | Decision (§12) + executive summary + pipeline update |
 | `/search:evaluate {deal}` | Quick independent go/no-go read |
 | `/search:nda {deal}` | Draft/sign a buyer-side NDA *(draft — counsel review)* |
 | `/search:loi {deal}` | Generate a non-binding LOI draft *(draft — counsel review)* |
 | `/search:dashboard` | Refresh `pipeline.md` + push to the Sheet (`--export` for HTML) |
-| `/search:morning` | Match Gmail `Deals/{slug}` labels to deals, digest new email |
+| `/search:gmail [deal]` | Pull deal email — backfill data points, refresh the comms timeline, catalog attachments |
 | `/search:log` | Log the session to `WORKLOG.md` + route detail to its home |
 | `/search:publish` | Commit + push this plugin repo so Cowork can `/plugin marketplace update` |
 
@@ -58,7 +58,7 @@ Commands also trigger from natural phrases ("new prospect: …", "run the financ
 
 - **acquisition-analysis** — the analytical brain (PLAYBOOK Steps 0–7). *Complete.*
 - **deal-documents** — NDA + LOI generation. *Scaffold.*
-- **deal-pipeline** — dashboard sync, HTML export, Gmail/Calendar morning routine. *Scaffold.*
+- **deal-pipeline** — dashboard sync, HTML export, Gmail/Calendar routine. *Gmail routine runs in-model; dashboard sync TODO.*
 - **session-log** — session-aware "log this". *Working (v1).*
 
 ## Agent
@@ -66,7 +66,7 @@ Commands also trigger from natural phrases ("new prospect: …", "run the financ
 
 ## Connectors (account-level, via claude.ai)
 
-The morning routine and dashboard sync use the **Gmail**, **Google Calendar**, and **Google Drive**
+The Gmail routine and dashboard sync use the **Gmail**, **Google Calendar**, and **Google Drive**
 connectors. These are configured on your claude.ai account (native in Cowork) — the plugin uses them
 but does not bundle them. Gmail label convention: one label per deal, `Deals/{slug}`.
 

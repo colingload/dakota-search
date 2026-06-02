@@ -3,6 +3,7 @@
 Broker emails, call notes, text threads, seller communications.
 
 **Suggested structure:**
+- `email-timeline.md` — the running communication timeline, maintained by `/search:gmail`
 - `YYYY-MM-DD-email-{subject-slug}.md` — paste email threads as markdown
 - `YYYY-MM-DD-call-notes-{who}.md` — call notes
 - `emails/` — raw `.eml` or PDF exports if preferred

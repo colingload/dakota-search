@@ -5,7 +5,7 @@
     {
       "name": "search",
       "source": "./search",
-      "description": "Dakota Search — acquisition deal-flow: analysis skill, deal commands (new/organize/analyze/report/evaluate/nda/loi/log/publish), dashboard sync, and a morning Gmail/Calendar routine."
+      "description": "Dakota Search — acquisition deal-flow: analysis skill, deal commands (new-deal/organize/analyze/decide/evaluate/nda/loi/log/publish), dashboard sync, and a Gmail/Calendar routine."
     }
   ]
 }

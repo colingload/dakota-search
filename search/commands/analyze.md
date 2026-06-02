@@ -9,4 +9,4 @@ Rebuild the P&L from primary sources, compute adjusted SDE/EBITDA (your view vs.
 model the SBA stack + DSCR, then populate the risk register and operating thesis. Update
 `holdco/deal-flow/$ARGUMENTS/analysis.md` (§1–11) and produce `financials-side-by-side.html`.
 
-When done, suggest `/search:report $ARGUMENTS` and `/search:dashboard`.
+When done, suggest `/search:decide $ARGUMENTS` and `/search:dashboard`.

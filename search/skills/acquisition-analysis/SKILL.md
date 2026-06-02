@@ -130,7 +130,7 @@ Read these as needed — don't load everything up front:
 | Files dropped | "Organize the {deal} inbox" |
 | Financials | "Run the financial analysis on {deal}" |
 | Risk + thesis | "Continue with risks and operating thesis" |
-| Full report | "Surface the analysis report for {deal}" |
+| Decision | "Surface the analysis report for {deal}" or `/search:decide {deal}` |
 | New info | "I added new docs to {deal} inbox — re-run analysis" |
 | Compare two | "Compare {deal A} and {deal B} on the fit scorecard" |
 | Save session | "log" |

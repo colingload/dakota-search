@@ -1,5 +1,5 @@
 ---
-description: Surface the decision + executive summary for a deal
+description: Decide — record the §12 verdict + executive summary + pipeline update
 argument-hint: "{deal}"
 ---
 
