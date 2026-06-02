@@ -5,17 +5,19 @@ description: >-
   Letter of Intent (LOI) — for a specific deal under deal-flow/. Use when the user
   says "sign an NDA", "generate / draft an LOI", "send an LOI for {deal}", "NDA for
   {deal}", or otherwise needs a deal document drafted. Fills a tokenized template
-  with terms pulled from {deal}/analysis.md and {deal}/README.md, writes a NEW dated
-  draft into the deal folder, and flags any value it cannot source as [CONFIRM].
+  (clean HTML → PDF) with terms pulled from {deal}/analysis.md and {deal}/README.md — the
+  LOI section by section with your sign-off — writes a NEW dated draft into the deal folder, and
+  flags any value it cannot source as [CONFIRM].
   Outputs are drafts for attorney review — NOT legal advice. Do NOT use for analyzing
   financials (that is the acquisition-analysis skill).
 ---
 
 # Deal Documents — NDA & LOI generation
 
-> ⚠️ **SCAFFOLD — not yet fully implemented.** The frontmatter trigger is live, but the
-> templates and fill logic are TODO (planned build session). If invoked now, explain the
-> intended behavior below and offer to build it, rather than fabricating a document.
+> ⚠️ **PARTIAL.** The **LOI runs in-model now** (`/search:loi`) — HTML template +
+> the section-by-section fill below, exported to PDF the same way. The **NDA is still a
+> scaffold** (template + fill logic TODO); if it's invoked, explain the intended behavior and offer
+> to build it rather than fabricating a document.
 
 > ⚖️ **Not legal advice.** Every document this skill produces is a draft to be reviewed by
 > qualified counsel before sending or signing. This disclaimer must appear in every output.
@@ -32,23 +34,44 @@ Two documents, both written to the target deal folder `holdco/deal-flow/{deal}/`
 3. Set `NDA signed: Y — {date}` in `{deal}/README.md`.
 4. Append a one-line note to `{deal}/discussion-log.md`.
 
-### `/search:loi {deal}` — non-binding LOI
-1. Read `{deal}/analysis.md` (§1 price/SDE/multiple, §7 financing stack, §12 recommendation)
-   and `{deal}/README.md` (company, broker) to source the terms.
-2. Fill `templates/loi.template.md` (asset purchase; seller-note standby/subordinated tranches
-   sized for the SBA equity injection; working-capital peg; exclusivity; non-binding except
-   the specified sections).
-3. Write `holdco/deal-flow/{deal}/loi-draft-{date}.md` (matches the existing naming
-   convention; never overwrite).
-4. Flag every value not found in the deal files as `[CONFIRM]` so the user fills it in.
+### `/search:loi {deal}` — non-binding LOI (section-by-section, with your sign-off)
+Clean, standard HTML letter from `templates/loi.template.html`, filled **section by section** so the user
+verifies each block before moving on. Output is `{deal}/loi-draft-{date}.html` → export PDF (same as
+the cover letter). Anything that can't be sourced is written as `[CONFIRM]`.
+
+**Sources.** `{deal}/README.md` (company, broker, **Offer value (LOI basis)**) and
+`{deal}/analysis.md` (§7 financing stack, §12 decision + locked value). The Purchase Price **is** the
+locked Offer Value; the cash / SBA / seller-note split comes from the SBA model in §7. Buyer name +
+contact are static (Colin Gload).
+
+**Fill flow — three blocks. Attempt each field, then ask the user to confirm/edit before continuing:**
+1. **Parties** — `{{RECIPIENT_NAME}}` + `{{TO_BLOCK}}` (README Broker/Seller; else `[CONFIRM]`),
+   `{{COMPANY_NAME}}`, `{{BUYER_ENTITY}}` (acquisition NewCo), `{{SELLER_ENTITY}}` (Company, LLC).
+2. **Price & structure** (from the locked Value + §7 SBA model) — `{{PURCHASE_PRICE}}` (= Offer
+   Value), `{{MULTIPLE}}` (= price ÷ SDE), `{{SDE}}`, `{{CASH_AT_CLOSE}}`/`{{CASH_PCT}}`,
+   `{{SELLER_NOTE}}`/`{{SELLER_NOTE_PCT}}`, `{{STANDBY_TRANCHE}}`, `{{SUBORD_TRANCHE}}` +
+   `{{SUBORD_TERM}}` + `{{SUBORD_RATE}}`. Sanity-check that cash + seller note = Purchase Price.
+3. **Terms & timing** (standard defaults — confirm or tweak) — `{{DATE}}` (today),
+   `{{ACCEPTANCE_DEADLINE}}` (~5 BD out), `{{EXCLUSIVITY_DAYS}}` (60–90), `{{TRANSITION_DAYS}}`
+   (60–90), `{{NONCOMPETE_GEO}}` + `{{NONCOMPETE_YEARS}}` (5). Section 9 timeline ships with standard
+   targets — flag if the deal needs different ones.
+
+After the three blocks: write `loi-draft-{date}.html` (never overwrite); export `loi-draft-{date}.pdf`
+if a renderer is available (headless Chrome/Edge `--print-to-pdf`, weasyprint, pandoc) else tell the
+user to **Print → Save as PDF**; set `Status: LOI` in `README.md`; append a one-line note to
+`discussion-log.md`. The legal boilerplate (Sections 1, 5, 6, 10, 11, 12) is **static** — don't edit
+it without counsel.
+
+**Deal-by-deal variations** (what changes per deal): ① Parties — recipient, company, buyer entity,
+seller entity. ② Price/structure — Purchase Price (the Value), SDE, multiple, cash/SBA/seller-note
+split, standby vs. subordinated tranches, note term + rate. ③ Terms/timing — LOI date, acceptance
+deadline, exclusivity, transition, non-compete geography + years. Everything else is boilerplate.
 
 ## TODO (build session)
-- [ ] Author `templates/loi.template.md` — generalize from
-      `holdco/deal-flow/2026-05-28-cw-limited-flooring/loi-draft-2026-06-01.md` and the LOI
-      templates in `holdco/reference/sba-lender-materials/` (SMB Law Asset Purchase LOI,
-      "Copy of LOI Template - MAKE A COPY.md/.docx").
-- [ ] Author `templates/nda.template.md` — standard buyer-side mutual NDA (no clean source exists).
-- [ ] Distill `references/loi-guide-notes.md` from `EBIT - LOI Guide (Final).pdf` and
-      `references/nda-guidance.md`.
-- [ ] Implement the fill + dated-write + README/log update logic above.
-- [ ] No-script fallback: this skill is pure templating (no Python) — works the same in Cowork.
+- [x] LOI — `templates/loi.template.html` + the section-by-section fill above. Runs in-model.
+- [ ] Author `templates/nda.template.html` — buyer-side mutual NDA (HTML → PDF).
+- [ ] Implement the NDA fill + dated-write + README/log update logic.
+- [ ] Optional: distill `references/loi-guide-notes.md` and `references/nda-guidance.md` from the
+      reference materials.
+- [ ] No-script note: filling is pure templating (no Python) — works the same in Cowork; PDF export
+      needs a renderer (headless browser / weasyprint / pandoc), else Print → Save as PDF.

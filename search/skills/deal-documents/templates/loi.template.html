@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--
+  Non-Binding Letter of Intent — deal-flow template (plain/standard look, print-to-PDF).
+  Filled by the deal-documents skill on /search:loi, section by section with user verification,
+  written to {deal}/loi-draft-{date}.html, then saved/exported to loi-draft-{date}.pdf.
+  Visual style intentionally mirrors the original document — clean, standard, no letterhead.
+  Legal boilerplate (Sections 1, 5, 6, 10, 11, 12) is STATIC — do not change without counsel.
+
+  DEAL-BY-DEAL TOKENS (see the deal-documents skill for the fill flow + sources):
+    Parties:        {{DATE}} {{TO_BLOCK}} {{RECIPIENT_NAME}} {{COMPANY_NAME}} {{BUYER_ENTITY}} {{SELLER_ENTITY}}
+    Price/Structure:{{PURCHASE_PRICE}} {{MULTIPLE}} {{SDE}} {{CASH_AT_CLOSE}} {{CASH_PCT}}
+                    {{SELLER_NOTE}} {{SELLER_NOTE_PCT}} {{STANDBY_TRANCHE}} {{SUBORD_TRANCHE}}
+                    {{SUBORD_TERM}} {{SUBORD_RATE}}
+    Terms/Timing:   {{ACCEPTANCE_DEADLINE}} {{EXCLUSIVITY_DAYS}} {{TRANSITION_DAYS}}
+                    {{NONCOMPETE_GEO}} {{NONCOMPETE_YEARS}}
+  {{PURCHASE_PRICE}} is the locked Offer Value (README "Offer value (LOI basis)" / analysis §12);
+  the cash / SBA / seller-note split comes from the SBA model (analysis §7). Buyer name + contact are
+  static (Colin Gload). Anything unsourced -> write [CONFIRM].
+  Export PDF: open in a browser -> Print -> "Save as PDF" (Letter, default margins).
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Letter of Intent — {{COMPANY_NAME}}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{ font-family:"Calibri","Segoe UI",Arial,sans-serif; color:#000; line-height:1.4; font-size:11pt; }
+  .page{ max-width:8.5in; margin:0 auto; padding:1in; background:#fff; }
+  .confidential{ font-size:9pt; font-weight:700; letter-spacing:.1em; margin-bottom:14px; }
+  h1{ text-align:center; font-size:16pt; margin:4px 0 2px; }
+  .subtitle{ text-align:center; font-size:11pt; margin-bottom:18px; }
+  .meta{ margin-bottom:14px; }
+  .meta div{ margin-bottom:2px; }
+  .meta .lbl{ display:inline-block; width:46px; font-weight:700; }
+  .nonbinding{ font-style:italic; margin:12px 0; }
+  h2{ font-size:12pt; font-weight:700; margin:16px 0 6px; }
+  p{ margin-bottom:8px; }
+  ul{ margin:0 0 8px 22px; } li{ margin-bottom:4px; }
+  table{ border-collapse:collapse; width:100%; margin:10px 0; font-size:10.5pt; }
+  th,td{ border:1px solid #000; padding:5px 8px; text-align:left; }
+  th{ font-weight:700; }
+  tr.total td{ font-weight:700; }
+  .sig{ margin-top:24px; }
+  .sigline{ border-top:1px solid #000; width:300px; margin-top:28px; padding-top:3px; font-size:10pt; }
+  @page{ size:Letter; margin:1in; }
+  @media print{
+    .page{ max-width:none; margin:0; padding:0; }
+    h2,tr,li{ page-break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="confidential">CONFIDENTIAL</div>
+
+    <h1>LETTER OF INTENT</h1>
+    <div class="subtitle">Non-Binding Proposal to Acquire the Business and Operating Assets of {{COMPANY_NAME}}</div>
+
+    <div class="meta">
+      <div><span class="lbl">Date:</span> {{DATE}}</div>
+      <div><span class="lbl">To:</span> {{TO_BLOCK}}</div>
+      <div><span class="lbl">From:</span> Colin Gload, {{BUYER_ENTITY}} (&ldquo;Buyer&rdquo;, or its assignee acquisition entity)</div>
+      <div><span class="lbl">Re:</span> Non-binding Letter of Intent to acquire the business and operating assets of {{COMPANY_NAME}} (the &ldquo;Company&rdquo;)</div>
+    </div>
+
+    <p>Dear {{RECIPIENT_NAME}},</p>
+    <p>Thank you for the opportunity to evaluate {{COMPANY_NAME}}. Based on the information provided to date, Buyer is pleased to submit this non-binding Letter of Intent (&ldquo;LOI&rdquo;) outlining the principal terms on which Buyer would acquire the Company.</p>
+
+    <p class="nonbinding">This LOI is non-binding except for the provisions expressly identified in Section 10 (Binding Provisions).</p>
+
+    <h2>1. Transaction Structure</h2>
+    <p>Asset purchase. Buyer (or its assignee) will acquire substantially all of the operating assets of the Company, including furniture, fixtures, and equipment; vehicles; inventory; customer relationships and contracts; goodwill; intellectual property; business name and brand; phone numbers; and operational systems &mdash; free and clear of all liabilities, liens, and indebtedness (a cash-free, debt-free transaction). Seller retains and satisfies all pre-closing liabilities, debt, and obligations at or before closing.</p>
+
+    <h2>2. Purchase Price</h2>
+    <p>Total consideration: {{PURCHASE_PRICE}}, representing approximately {{MULTIPLE}}&times; trailing Seller&rsquo;s Discretionary Earnings (&ldquo;SDE&rdquo;) of ~{{SDE}}.</p>
+    <p>This price assumes confirmatory diligence substantiates normalized, verifiable SDE at the level stated above. To the extent diligence establishes verified SDE materially above or below this figure, the Purchase Price will be adjusted on the same valuation multiple, or the parties will renegotiate in good faith.</p>
+    <table>
+      <tr><th>Component</th><th>Amount</th><th>%</th><th>Terms</th></tr>
+      <tr><td>Cash at Closing</td><td>{{CASH_AT_CLOSE}}</td><td>{{CASH_PCT}}</td><td>Buyer equity + SBA 7(a)</td></tr>
+      <tr><td>Seller Note</td><td>{{SELLER_NOTE}}</td><td>{{SELLER_NOTE_PCT}}</td><td>See Section 3</td></tr>
+      <tr class="total"><td>Total</td><td>{{PURCHASE_PRICE}}</td><td>100%</td><td></td></tr>
+    </table>
+    <p>In lieu of a separate cash escrow, Buyer&rsquo;s indemnity security is provided through the right of offset against the Seller Note (Section 3).</p>
+
+    <h2>3. Seller Note</h2>
+    <p>A {{SELLER_NOTE}} seller note ({{SELLER_NOTE_PCT}} of Purchase Price), structured for SBA compatibility:</p>
+    <ul>
+      <li><strong>Standby tranche:</strong> {{STANDBY_TRANCHE}} on full 24-month standby (no principal or interest during standby period), qualifying toward Buyer&rsquo;s SBA equity injection.</li>
+      <li><strong>Subordinated tranche:</strong> {{SUBORD_TRANCHE}}, subordinate to the SBA loan; {{SUBORD_TERM}} term, interest at {{SUBORD_RATE}}, amortizing after the standby period.</li>
+    </ul>
+    <p>Right of offset across the full note &mdash; Buyer may offset for indemnifiable claims, breaches of representations and warranties, undisclosed liabilities, or post-closing adjustments. This replaces a separate cash escrow.</p>
+
+    <h2>4. Working Capital</h2>
+    <p>The Company will be delivered at closing with a normalized level of net working capital sufficient to operate in the ordinary course (a &ldquo;peg&rdquo; to be agreed based on trailing twelve-month averages once the balance sheet and A/R and A/P aging are provided). The Purchase Price adjusts dollar-for-dollar for any shortfall or excess against the agreed peg.</p>
+
+    <h2>5. Financing Contingency</h2>
+    <p>This transaction is contingent on Buyer obtaining SBA 7(a) acquisition financing on commercially reasonable terms. Buyer is pre-qualified and will pursue financing diligently in parallel with confirmatory diligence. If Buyer is unable to obtain SBA financing through no fault of Buyer, this LOI shall terminate and neither party shall have further obligation to the other.</p>
+
+    <h2>6. Confirmatory Due Diligence</h2>
+    <p>Closing is conditioned on Buyer&rsquo;s satisfactory completion of confirmatory due diligence, including (without limitation):</p>
+    <ul>
+      <li>Quality-of-earnings review confirming SDE off three years of business tax returns and an accrual restatement of the cash-basis P&amp;L.</li>
+      <li>Itemized add-back schedule with supporting documentation.</li>
+      <li>Year-end balance sheets, A/R and A/P aging, and debt schedule.</li>
+      <li>Customer concentration analysis &mdash; revenue by customer (top 10), recurring-contract vs. project split, and contract renewal terms.</li>
+      <li>Assignability of material customer contracts, subcontractor agreements, and the facility lease (SBA requires 10+ years of lease term including renewals).</li>
+      <li>Owner compensation and the function and replacement cost of all non-owner labor.</li>
+      <li>Customary legal, insurance, licensing, environmental, and litigation review.</li>
+    </ul>
+    <p>Seller agrees to provide the foregoing promptly upon execution of this LOI to enable an efficient process.</p>
+
+    <h2>7. Transition and Non-Compete</h2>
+    <p><strong>Transition:</strong> Seller will provide a reasonable transition period of {{TRANSITION_DAYS}} days at no additional cost, with optional paid consulting thereafter, to transfer customer, subcontractor, and supplier relationships and operational knowledge.</p>
+    <p><strong>Non-compete:</strong> Seller and principals will agree to a customary non-compete and non-solicitation covering {{NONCOMPETE_GEO}} for {{NONCOMPETE_YEARS}} years from closing.</p>
+
+    <h2>8. Exclusivity</h2>
+    <p>Upon execution, Seller and its representatives will deal exclusively with Buyer and will not solicit, entertain, or negotiate any other offer, inquiry, or transaction regarding the Company for a period of {{EXCLUSIVITY_DAYS}} days (the &ldquo;Exclusivity Period&rdquo;), extendable by mutual written agreement while the parties proceed in good faith toward closing. (Binding &mdash; see Section 10.)</p>
+
+    <h2>9. Timeline (Target)</h2>
+    <table>
+      <tr><th>Milestone</th><th>Target</th></tr>
+      <tr><td>LOI executed</td><td>Within 5 business days</td></tr>
+      <tr><td>Diligence materials delivered</td><td>Within 10 business days of execution</td></tr>
+      <tr><td>Confirmatory diligence + financing</td><td>~45&ndash;60 days</td></tr>
+      <tr><td>Definitive Agreement signed and closing</td><td>~60&ndash;90 days from execution</td></tr>
+    </table>
+
+    <h2>10. Binding Provisions</h2>
+    <p>This LOI is a statement of intent only and is non-binding, and no party is obligated to proceed, except for the following, which are binding and enforceable: Section 8 (Exclusivity), Section 11 (Confidentiality), Section 12 (Expenses), and this Section 10. No other obligation arises unless and until the parties execute a mutually acceptable definitive Asset Purchase Agreement. The Purchase Price and all other terms are non-binding and subject to confirmatory diligence and definitive documentation.</p>
+
+    <h2>11. Confidentiality</h2>
+    <p>The existence and terms of this LOI, and all information exchanged, are confidential and subject to the parties&rsquo; existing NDA. (Binding &mdash; see Section 10.)</p>
+
+    <h2>12. Expenses</h2>
+    <p>Each party bears its own fees and expenses (legal, accounting, advisory) regardless of whether the transaction closes. (Binding &mdash; see Section 10.)</p>
+
+    <p style="margin-top:14px;">This LOI reflects Buyer&rsquo;s genuine interest and intent to proceed efficiently to closing. Buyer is ready to execute and begin confirmatory diligence immediately upon Seller making the diligence materials in Section 6 available.</p>
+    <p>Please indicate acceptance by signing below. This LOI will remain open for acceptance until {{ACCEPTANCE_DEADLINE}}.</p>
+
+    <div class="sig">
+      <p>Sincerely,</p>
+      <div class="sigline"><strong>Colin Gload</strong><br>{{BUYER_ENTITY}}<br>colin@dakotastrategy.com &middot; 443-824-3130</div>
+    </div>
+
+    <div class="sig">
+      <p><strong>Acknowledged and Agreed:</strong></p>
+      <p style="margin-top:4px;">Seller &mdash; {{SELLER_ENTITY}}</p>
+      <div class="sigline">By</div>
+      <div class="sigline">Name</div>
+      <div class="sigline">Date</div>
+    </div>
+  </div>
+</body>
+</html>

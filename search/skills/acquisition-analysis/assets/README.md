@@ -14,6 +14,7 @@
 | Industry | |
 | Geography | |
 | Asking price | |
+| Offer value (LOI basis) | _locked at /search:decide_ |
 | SDE / EBITDA (TTM) | |
 | Multiple (asking) | |
 | Revenue (TTM) | |

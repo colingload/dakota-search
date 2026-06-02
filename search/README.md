@@ -45,7 +45,7 @@ private repo at runtime — that data is never stored in this public plugin repo
 | `/search:decide {deal}` | Decision (§12) + executive summary + pipeline update |
 | `/search:evaluate {deal}` | Quick independent go/no-go read |
 | `/search:nda {deal}` | Draft/sign a buyer-side NDA *(draft — counsel review)* |
-| `/search:loi {deal}` | Generate a non-binding LOI draft *(draft — counsel review)* |
+| `/search:loi {deal}` | Non-binding LOI — HTML → PDF, filled section-by-section *(draft — counsel review)* |
 | `/search:dashboard` | Refresh `pipeline.md` + push to the Sheet (`--export` for HTML) |
 | `/search:gmail [deal]` | Pull deal email — backfill data points, refresh the comms timeline, catalog attachments |
 | `/search:log` | Log the session to `WORKLOG.md` + route detail to its home |
@@ -57,7 +57,7 @@ Commands also trigger from natural phrases ("new prospect: …", "run the financ
 ## Skills
 
 - **acquisition-analysis** — the analytical brain (PLAYBOOK Steps 0–7). *Complete.*
-- **deal-documents** — NDA + LOI generation. *Scaffold.*
+- **deal-documents** — NDA + LOI generation. *LOI runs in-model (→ PDF); NDA scaffold.*
 - **deal-pipeline** — dashboard sync, HTML export, Gmail/Calendar routine. *Gmail routine runs in-model; dashboard sync TODO.*
 - **session-log** — session-aware "log this". *Working (v1).*
 
@@ -78,7 +78,7 @@ routes detail to the deal's `discussion-log.md` or the repo `CHANGELOG.md`.
 
 ## Build status (v0.1.0 — scaffold)
 
-`acquisition-analysis` is lifted and complete; `session-log` works. `deal-documents`,
-`deal-pipeline`, and `deal-evaluator` are scaffolded with full frontmatter + TODOs, to be fleshed
-out one per session. See each `SKILL.md` for its TODO list, and the plan at
-`.claude/plans/i-want-to-rethink-staged-lynx.md`.
+`acquisition-analysis` is complete (incl. the buyer cover letter and the locked Offer Value);
+`session-log` works. The `deal-pipeline` **Gmail routine** and the `deal-documents` **LOI** now run
+in-model. Still scaffolded: `deal-pipeline` dashboard sync, the `deal-documents` NDA, and the
+`deal-evaluator` agent — see each `SKILL.md` for its TODO list.

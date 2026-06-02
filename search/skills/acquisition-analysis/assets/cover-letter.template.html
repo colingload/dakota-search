@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+  Buyer Introduction Cover Letter — Dakota Strategy deal-flow template (branded, print-to-PDF).
+  Filled by acquisition-analysis at the end of analyze (Step 4) and on /search:evaluate, written to
+  {deal}/correspondence/cover-letter-{date}.html, then saved/exported to cover-letter-{date}.pdf.
+  The buyer bio is STATIC — do not change it.
+  Tokens:
+    {{DATE}}              today's date, spelled out (e.g., June 1, 2026)
+    {{RECIPIENT}}         README "Source -> Broker / referrer"; if blank, [CONFIRM]
+    {{COMPANY_NAME}}      target company (README title) — appears twice
+    {{WHY_THIS_BUSINESS}} ONE tailored sentence on why this business fits (thesis / analysis.md §2);
+                          model-written — flag for review
+  Export PDF: open in a browser -> Print -> "Save as PDF" (Letter, default margins). Styled to print
+  clean with no special settings; or auto-convert with a headless renderer / weasyprint / pandoc.
+  Brand matches financials-side-by-side.template.html: --navy #0a2540, --accent #c8a96a.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Buyer Introduction — {{COMPANY_NAME}}</title>
+<style>
+  :root{
+    --navy:#0a2540;
+    --accent:#c8a96a;
+    --text:#1a1a1a;
+    --muted:#6c757d;
+    --bg:#f5f6f8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.55;
+  }
+  .page{
+    background:#fff;
+    max-width:8.5in;
+    margin:24px auto;
+    padding:1in;
+    box-shadow:0 2px 12px rgba(10,37,64,.12);
+    font-size:11.5pt;
+  }
+  .letterhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--accent);
+    padding-bottom:12px;
+    margin-bottom:28px;
+  }
+  .wordmark{
+    font-size:22pt;
+    font-weight:700;
+    letter-spacing:.06em;
+    color:var(--navy);
+  }
+  .wordmark .tag{
+    display:block;
+    font-size:8.5pt;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:5px;
+  }
+  .contact{
+    text-align:right;
+    font-size:9pt;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .date{color:var(--muted);font-size:10.5pt;margin-bottom:20px;}
+  .salutation{margin-bottom:14px;}
+  p.body{margin-bottom:13px;}
+  .signoff{margin-top:22px;}
+  .signoff .name{font-weight:700;color:var(--navy);}
+  .signoff .meta{color:var(--muted);font-size:10pt;}
+  @page{ size:Letter; margin:1in; }
+  @media print{
+    html,body{background:#fff;}
+    .page{max-width:none;margin:0;padding:0;box-shadow:none;font-size:11pt;}
+    .letterhead{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="letterhead">
+      <div class="wordmark">DAKOTA STRATEGY<span class="tag">Lower Middle Market Advisory &amp; Operating Platform</span></div>
+      <div class="contact">
+        Colin Gload<br>
+        colin@dakotastrategy.com<br>
+        443-824-3130
+      </div>
+    </div>
+
+    <div class="date">{{DATE}}</div>
+
+    <p class="salutation">Dear {{RECIPIENT}},</p>
+
+    <p class="body">Thank you for the opportunity to introduce myself and share a bit about my background as you evaluate potential buyers for {{COMPANY_NAME}}.</p>
+
+    <p class="body">My name is Colin Gload. I'm the co-founder and former Chief Revenue Officer of Lumina Solar, a Maryland-based solar developer and EPC contractor that I helped build from a startup to approximately $65 million in annual revenue and over 165 employees across the Mid-Atlantic. I spent eight years in that business, owning the full revenue function, building and managing field sales teams, negotiating commercial contracts, and running EOS as the Visionary on the leadership team. Under our leadership, Lumina Solar was named a Top Workplace in Baltimore by The Baltimore Sun multiple consecutive years, and in 2022, I was personally named to Baltimore's Top 40 Under 40.</p>
+
+    <p class="body">I live in Fallston, Maryland with my wife and our two young children. I'm rooted in this community and I'm looking for one strong, established local business that I can step into, operate, and build on for the long term. I'm not a passive investor or a roll-up fund. I'm an operator who has built a business from zero and wants to do it again, this time by continuing the legacy of a company that's already proven.</p>
+
+    <p class="body">Today I run Dakota Strategy, a lower middle market advisory and operating platform focused on the trades and services sector. My work centers on helping owners of established businesses plan for transition, improve their operations, and position for a successful exit. That same discipline is what I'd bring to an acquisition: a focus on people, systems, and sustainable growth.</p>
+
+    <p class="body">On the financing side, I have an established lending partnership with Northwest Bank, a Preferred SBA Lender specializing in acquisition lending. Northwest Bank has reviewed my financials, confirmed that I meet their underwriting criteria, and issued a formal support letter confirming my pre-qualification for SBA 7(a) financing up to $5,000,000. Their team brings a combined 55 years of SBA lending experience and is ready to move to formal underwriting upon execution of a Letter of Intent. Their support letter is enclosed.</p>
+
+    <p class="body">{{WHY_THIS_BUSINESS}} I would welcome the chance to learn more about {{COMPANY_NAME}} and discuss whether there's a fit. I'm available at your convenience and can move quickly.</p>
+
+    <div class="signoff">
+      <p>Sincerely,</p>
+      <p style="margin-top:18px;">
+        <span class="name">Colin Gload</span><br>
+        <span class="meta">Dakota Strategy<br>colin@dakotastrategy.com &middot; 443-824-3130</span>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -92,13 +92,13 @@ Populate `analysis.md` section 1 (snapshot), section 3 (revenue quality), sectio
 
 **Trigger:** "Continue with risks and operating thesis" (or runs automatically after Step 3).
 
-Populate `analysis.md` section 8 (seller & transition — why selling, urgency, post-close involvement, training, key-employee retention), section 9 (first-100-days operating thesis), section 10 (severity-ranked risk register with mitigations), and section 11 (Dakota fit scorecard — 7 criteria scored 1-5, total /35). Scorecard rubric is in `references/analysis-framework.md`.
+Populate `analysis.md` section 8 (seller & transition — why selling, urgency, post-close involvement, training, key-employee retention), section 9 (first-100-days operating thesis), section 10 (severity-ranked risk register with mitigations), and section 11 (Dakota fit scorecard — 7 criteria scored 1-5, total /35). Scorecard rubric is in `references/analysis-framework.md`. Then draft the **buyer cover letter** (see below).
 
 ### Step 5 — Decision & report
 
 **Trigger:** "Surface the analysis report for {deal}" (or runs automatically after Step 4).
 
-Populate `analysis.md` section 12 with the recommendation (Pass / More info / Submit IOI-LOI / Walk after LOI). Post an **executive summary** to chat: one-paragraph thesis, 3-5 key insights, 3-5 top concerns, the financial verdict (adjusted SDE, multiple, DSCR, financeability), open H/M/L diligence questions, and the recommended next action with owner and due date. Move H-priority asks into the `questions.md` Open table and update the `pipeline.md` row (fit score, SDE estimate, phase, next action).
+Populate `analysis.md` section 12 with the recommendation (Pass / More info / Submit IOI-LOI / Walk after LOI). Post an **executive summary** to chat: one-paragraph thesis, 3-5 key insights, 3-5 top concerns, the financial verdict (adjusted SDE, multiple, DSCR, financeability), open H/M/L diligence questions, and the recommended next action with owner and due date. Move H-priority asks into the `questions.md` Open table and update the `pipeline.md` row (fit score, SDE estimate, phase, next action). **Lock the Offer Value (LOI basis):** when the call is Submit IOI-LOI, record the single offer purchase price the buyer will put forward — derived from the max-supportable price (§7 SBA model) at the target DSCR — in `analysis.md` §12 and as **Offer value (LOI basis)** in `README.md`. This is the number `/search:loi` pulls for the Purchase Price (and the cash / SBA / seller-note split flows from the §7 stack).
 
 ### Step 6 — Iterate on new info
 
@@ -112,6 +112,22 @@ Re-run Steps 2-5. Update `analysis.md` in place — **append and flag changes, d
 
 Append a dated entry (newest at top) to `{deal}/discussion-log.md`: topic, key findings (substantive numbers/mechanisms/anomalies — skip ephemeral chat), deliverables produced, broker correspondence (paraphrased Q's/A's), and decisions/next steps. The log lets the user pick a deal back up cold weeks later or brief a partner.
 
+## Buyer cover letter (auto-generated on analyze & evaluate)
+
+At the end of analyze (Step 4) and on `/search:evaluate`, draft Colin's buyer introduction letter:
+1. Read `assets/cover-letter.template.html` — Dakota-branded letterhead + static buyer bio.
+   **Do not change that prose.**
+2. Fill the tokens: `{{DATE}}` = today (spelled out); `{{COMPANY_NAME}}` = the target name (README
+   title); `{{RECIPIENT}}` = the README **Source → Broker / referrer** (if blank, write `[CONFIRM]`
+   and flag it); `{{WHY_THIS_BUSINESS}}` = **one** tailored sentence on why this specific business
+   fits, drawn from the README one-line thesis / `analysis.md` §2 (business quality).
+3. Write `{deal}/correspondence/cover-letter-{date}.html` — a new dated file; never overwrite. Then
+   export a PDF beside it (`cover-letter-{date}.pdf`) if a renderer is available (headless
+   Chrome/Edge `--print-to-pdf`, `weasyprint`, or `pandoc`); otherwise tell the user to open the HTML
+   and **Print → Save as PDF** (Letter, default margins — it's styled to print clean as-is).
+4. In the chat report, surface the `{{WHY_THIS_BUSINESS}}` sentence and any `[CONFIRM]` for review.
+   The letter is a **draft to review before sending** — the tailored line especially.
+
 ## Bundled resources
 
 Read these as needed — don't load everything up front:
@@ -120,7 +136,7 @@ Read these as needed — don't load everything up front:
 - `references/sba-model.md` — how the SBA financing model works (sources & uses, guaranty-fee tiers, weighted-average term, full-standby seller notes, DSCR), and how to run `scripts/sba_model.py`. **Read this for Step 3 part 3.**
 - `references/extraction-guide.md` — getting clean numbers out of scanned tax returns, QuickBooks PDF exports, and CIM tables; the vision-on-images fallback; reconciliation discipline. **Read this when financials won't OCR cleanly.**
 - `scripts/sba_model.py` — the SBA financing calculator. Computes DSCR by year, sources & uses, guaranty fee, and the max-supportable price solve. Run `python scripts/sba_model.py --help`.
-- `assets/` — the canonical deal-folder templates (`analysis.md`, `questions.md`, `discussion-log.md`, `README.md`) and the `financials-side-by-side.template.html`.
+- `assets/` — the canonical deal-folder templates (`analysis.md`, `questions.md`, `discussion-log.md`, `README.md`), the `financials-side-by-side.template.html`, and the `cover-letter.template.html` (branded buyer intro letter → PDF).
 
 ## Command cheat sheet
 
