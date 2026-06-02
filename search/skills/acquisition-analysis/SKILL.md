@@ -126,7 +126,7 @@ Read these as needed — don't load everything up front:
 
 | Stage | Say |
 |-------|-----|
-| New deal | "New prospect: {name}" |
+| New deal | "New prospect: {name}" or `/search:new-deal {name}` |
 | Files dropped | "Organize the {deal} inbox" |
 | Financials | "Run the financial analysis on {deal}" |
 | Risk + thesis | "Continue with risks and operating thesis" |

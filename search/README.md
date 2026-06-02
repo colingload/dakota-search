@@ -39,7 +39,7 @@ private repo at runtime — that data is never stored in this public plugin repo
 
 | Command | What it does |
 |---|---|
-| `/search:new {name}` | New prospect — clone `_template/`, prefill, add a pipeline row |
+| `/search:new-deal {name}` | New Deal — clone `_template/`, prefill, add a pipeline row, then wait for inbox drops |
 | `/search:organize {deal}` | Classify + rename a deal's `inbox/` into cim/financials/correspondence |
 | `/search:analyze {deal}` | Financial analysis + risk/operating thesis (rebuild P&L, SDE/EBITDA, DSCR) |
 | `/search:report {deal}` | Decision (§12) + executive summary + pipeline update |
